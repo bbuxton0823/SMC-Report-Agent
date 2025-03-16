@@ -8,10 +8,21 @@ interface Version {
   name?: string;
 }
 
-export default function CanvasEditor() {
+interface CanvasEditorProps {
+  initialContent: string | null;
+}
+
+export default function CanvasEditor({ initialContent }: CanvasEditorProps) {
   const [autoSaveInterval, setAutoSaveInterval] = useState<NodeJS.Timeout | null>(null);
   const [versions, setVersions] = useState<Version[]>([]);
-  const [currentContent, setCurrentContent] = useState<string | null>(null);
+  const [currentContent, setCurrentContent] = useState<string | null>(initialContent);
+  
+  // Initialize with initial content
+  useEffect(() => {
+    if (initialContent) {
+      setCurrentContent(initialContent);
+    }
+  }, [initialContent]);
   
   // Initialize autosave
   useEffect(() => {

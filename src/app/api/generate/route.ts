@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OPENAI_API_KEY } from '@/lib/env';
+import { OPENAI_API_KEY, DEFAULT_MODEL } from '@/lib/env';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,14 +16,15 @@ export async function POST(request: NextRequest) {
     const { 
       writingStyleFiles, 
       policyDocuments, 
-      reportType, 
+      reportType,
+      reportDescription, 
       dataFiles, 
-      selectedModel, 
+      selectedModel = DEFAULT_MODEL, 
       performancePreference 
     } = body;
 
     // Validate required fields
-    if (!reportType || !selectedModel) {
+    if (!reportType) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
     // For now, we'll simulate the API call
     console.log('Generating report with:', {
       reportType,
+      reportDescription,
       selectedModel,
       performancePreference,
       writingStyleCount: writingStyleFiles?.length || 0,
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest) {
       content: `
         <h1>${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Business Report</h1>
         <p>This report was generated using the ${selectedModel} model with a performance preference of ${performancePreference}%.</p>
+        ${reportDescription ? `<h2>User Requirements</h2><p>${reportDescription}</p>` : ''}
         <p>Writing style samples: ${writingStyleFiles?.length || 0} files</p>
         <p>Policy documents: ${policyDocuments?.length || 0} files</p>
         <p>Data files for analysis: ${dataFiles?.length || 0} files</p>

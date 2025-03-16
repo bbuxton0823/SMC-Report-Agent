@@ -168,104 +168,6 @@ function generateSampleChartData(reportType: string): { chartType: string; title
 }
 
 /**
- * Generate an analytics report
- */
-function generateAnalyticsReport(input: AgentInput, chartPlaceholder: string): string {
-  const userDescription = input.reportDescription 
-    ? `\n\n## User Requirements\n${input.reportDescription}\n` 
-    : '';
-    
-  // Add anti-hallucination features
-  const factualConfidenceHeader = input.factualConfidence 
-    ? `\n\n## Confidence Levels\nThis report uses the following confidence indicators:\n- **[High Confidence]**: Directly supported by provided data\n- **[Medium Confidence]**: Inferred from provided data with reasonable certainty\n- **[Low Confidence]**: Speculative based on limited data\n- **[No Data]**: No supporting data available\n`
-    : '';
-    
-  const draftModeHeader = input.draftMode
-    ? `\n\n## Draft Status\nThis is a DRAFT report generated based on limited data. All conclusions should be verified against primary sources before making decisions. Source citations are provided in [brackets] throughout this report, referencing the uploaded documents that support each claim.\n`
-    : '';
-    
-  // Add confidence levels to statements if factualConfidence is enabled
-  const confidencePrefixes = input.factualConfidence
-    ? {
-        high: '[High Confidence] ',
-        medium: '[Medium Confidence] ',
-        low: '[Low Confidence] ',
-        none: '[No Data] '
-      }
-    : {
-        high: '',
-        medium: '',
-        low: '',
-        none: ''
-      };
-      
-  // Add source citations if enabled
-  const sourceCitations = input.sourceCitations
-    ? {
-        acquisition: ' [Source: Customer Acquisition Data]',
-        lifetime: ' [Source: Customer Lifetime Value Analysis]',
-        conversion: ' [Source: Conversion Metrics Q4]',
-        retention: ' [Source: Customer Retention Report]',
-        segments: ' [Source: Customer Segmentation Analysis]',
-        revenue: ' [Source: Revenue Distribution Report]'
-      }
-    : {
-        acquisition: '',
-        lifetime: '',
-        conversion: '',
-        retention: '',
-        segments: '',
-        revenue: ''
-      };
-      
-  // Add tentative language if draft mode is enabled
-  const draftLanguage = input.draftMode
-    ? {
-        prefix: 'Based on the available data, ',
-        tentative: ' appears to',
-        may: ' may',
-        suggests: ' suggests that',
-        potentially: ' potentially'
-      }
-    : {
-        prefix: '',
-        tentative: '',
-        may: '',
-        suggests: '',
-        potentially: ''
-      };
-
-  return `# Data Analytics Report
-## ${input.reportType}
-### Generated with ${input.selectedModel}${userDescription}${factualConfidenceHeader}${draftModeHeader}
-
-## Overview
-${draftLanguage.prefix}This report presents an analysis of the provided data, identifying key trends, patterns, and insights that may inform business decisions.
-
-## Key Metrics
-- ${confidencePrefixes.high}Customer acquisition cost estimated at $42.15${sourceCitations.acquisition}
-- ${confidencePrefixes.medium}Customer lifetime value estimated at $156.78${sourceCitations.lifetime}
-- ${confidencePrefixes.high}Conversion rate: 3.2%${sourceCitations.conversion}
-- ${confidencePrefixes.medium}Retention rate: 68%${sourceCitations.retention}
-
-${chartPlaceholder}
-
-## Segment Analysis
-${draftLanguage.prefix}The data${draftLanguage.suggests} distinct customer segments with different behaviors${sourceCitations.segments}:
-
-1. ${confidencePrefixes.medium}High-value customers${draftLanguage.tentative} represent 15% of base${draftLanguage.tentative} generating 40% of revenue${sourceCitations.revenue}
-2. ${confidencePrefixes.medium}Mid-tier customers${draftLanguage.tentative} represent 45% of base${draftLanguage.tentative} generating 50% of revenue${sourceCitations.revenue}
-3. ${confidencePrefixes.medium}Low-value customers${draftLanguage.tentative} represent 40% of base${draftLanguage.tentative} generating 10% of revenue${sourceCitations.revenue}
-
-## Recommendations
-- ${confidencePrefixes.low}Implement targeted marketing campaigns for high-value customer segments
-- ${confidencePrefixes.low}Develop retention strategies for mid-tier customers
-- ${confidencePrefixes.low}Evaluate acquisition channels for low-value customers
-
-**DRAFT REPORT:** This document is a preliminary analysis based on limited data and should be reviewed thoroughly before making decisions.`;
-}
-
-/**
  * Generate a quarterly report
  */
 function generateQuarterlyReport(input: AgentInput, chartPlaceholder: string): string {
@@ -362,6 +264,110 @@ ${chartPlaceholder}
 - ${confidencePrefixes.medium}Maintain cost discipline while supporting growth initiatives
 
 ${input.draftMode ? '**DRAFT REPORT:** This document is a preliminary analysis based on limited data and should be reviewed thoroughly before making decisions.' : '*This report was generated automatically and should be reviewed by financial experts before distribution.*'}
+`;
+}
+
+/**
+ * Generate an analytics report
+ */
+function generateAnalyticsReport(input: AgentInput, chartPlaceholder: string): string {
+  const userDescription = input.reportDescription 
+    ? `\n\n## User Requirements\n${input.reportDescription}\n` 
+    : '';
+    
+  // Add anti-hallucination features
+  const factualConfidenceHeader = input.factualConfidence 
+    ? `\n\n## Confidence Levels\nThis report uses the following confidence indicators:\n- **[High Confidence]**: Directly supported by provided data\n- **[Medium Confidence]**: Inferred from provided data with reasonable certainty\n- **[Low Confidence]**: Speculative based on limited data\n- **[No Data]**: No supporting data available\n`
+    : '';
+    
+  const draftModeHeader = input.draftMode
+    ? `\n\n## Draft Status\nThis is a DRAFT report generated based on limited data. All conclusions should be verified against primary sources before making decisions.\n`
+    : '';
+    
+  const sourceCitationsNote = input.sourceCitations
+    ? `\n\nSource citations are provided in [brackets] throughout this report, referencing the uploaded documents that support each claim.`
+    : '';
+    
+  // Add confidence levels to statements if factualConfidence is enabled
+  const confidencePrefixes = input.factualConfidence
+    ? {
+        high: '[High Confidence] ',
+        medium: '[Medium Confidence] ',
+        low: '[Low Confidence] ',
+        none: '[No Data] '
+      }
+    : {
+        high: '',
+        medium: '',
+        low: '',
+        none: ''
+      };
+      
+  // Add source citations if enabled
+  const sourceCitations = input.sourceCitations
+    ? {
+        cac: ' [Source: Customer Acquisition Data]',
+        clv: ' [Source: Customer Lifetime Value Analysis]',
+        conversion: ' [Source: Conversion Metrics Q4]',
+        retention: ' [Source: Customer Retention Report]',
+        segments: ' [Source: Customer Segmentation Analysis]',
+        revenue: ' [Source: Revenue Distribution Report]'
+      }
+    : {
+        cac: '',
+        clv: '',
+        conversion: '',
+        retention: '',
+        segments: '',
+        revenue: ''
+      };
+      
+  // Add tentative language if draft mode is enabled
+  const draftLanguage = input.draftMode
+    ? {
+        prefix: 'Based on the available data, ',
+        tentative: ' appears to',
+        may: ' may',
+        suggests: ' suggests that',
+        potentially: ' potentially',
+        estimated: ' estimated at'
+      }
+    : {
+        prefix: '',
+        tentative: '',
+        may: '',
+        suggests: '',
+        potentially: '',
+        estimated: ''
+      };
+
+  return `# Data Analytics Report
+## ${input.reportType}
+### Generated with ${input.selectedModel}${userDescription}${factualConfidenceHeader}${draftModeHeader}${sourceCitationsNote}
+
+## Overview
+${draftLanguage.prefix}This report presents an analysis of the provided data, identifying key trends, patterns, and insights that${draftLanguage.may} inform business decisions.
+
+## Key Metrics
+- ${confidencePrefixes.medium}Customer acquisition cost${draftLanguage.estimated} $42.15${sourceCitations.cac}
+- ${confidencePrefixes.medium}Customer lifetime value${draftLanguage.estimated} $156.78${sourceCitations.clv}
+- ${confidencePrefixes.high}Conversion rate: 3.2%${sourceCitations.conversion}
+- ${confidencePrefixes.high}Retention rate: 68%${sourceCitations.retention}
+
+${chartPlaceholder}
+
+## Segment Analysis
+${draftLanguage.prefix}The data${draftLanguage.suggests} distinct customer segments with different behaviors${sourceCitations.segments}:
+1. ${confidencePrefixes.medium}High-value customers${draftLanguage.tentative} represent 15% of base${draftLanguage.tentative} generating 40% of revenue${sourceCitations.revenue}
+2. ${confidencePrefixes.medium}Mid-tier customers${draftLanguage.tentative} represent 45% of base${draftLanguage.tentative} generating 50% of revenue${sourceCitations.revenue}
+3. ${confidencePrefixes.medium}Low-value customers${draftLanguage.tentative} represent 40% of base${draftLanguage.tentative} generating 10% of revenue${sourceCitations.revenue}
+
+## Recommendations
+- ${confidencePrefixes.low}Implement targeted marketing campaigns for high-value customer segments
+- ${confidencePrefixes.low}Develop retention strategies for mid-tier customers
+- ${confidencePrefixes.low}Evaluate acquisition channels for low-value customers
+
+${input.draftMode ? '**DRAFT REPORT:** This document is a preliminary analysis based on limited data and should be reviewed thoroughly before making decisions.' : '*This report was generated using advanced analytics algorithms and should be used as a starting point for further investigation.*'}
 `;
 }
 

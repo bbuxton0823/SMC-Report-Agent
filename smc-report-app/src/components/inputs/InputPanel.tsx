@@ -14,7 +14,24 @@ interface FileUpload {
   type: string;
 }
 
-export default function InputPanel() {
+export interface InputData {
+  reportType: string;
+  reportDescription: string;
+  selectedModel: string;
+  policyDocuments: File[];
+  dataFiles: File[];
+  writingStyleFiles: File[];
+  performanceLevel: number;
+  factualConfidence: boolean;
+  draftMode: boolean;
+  sourceCitations: boolean;
+}
+
+interface InputPanelProps {
+  onReportGenerated: (content: string) => void;
+}
+
+export default function InputPanel({ onReportGenerated }: InputPanelProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportTypes, setReportTypes] = useState({
     written: true,
@@ -59,27 +76,49 @@ export default function InputPanel() {
     }
   };
   
-  const handleGenerateReport = () => {
+  const handleGenerateReport = async () => {
     setIsGenerating(true);
     
-    // In a real application, you would:
-    // 1. Determine which model(s) to use based on reportTypes
-    // 2. Send the user input and any uploaded files to your backend
-    // 3. Process the report generation request
-    
-    console.log('Generating report with:');
-    console.log('- User input:', userInput);
-    console.log('- Report types:', reportTypes);
-    console.log('- Writing style files:', writingStyleFiles.length);
-    console.log('- Formatting documents:', formattingDocuments.length);
-    console.log('- Data files:', dataFiles.length);
-    console.log('- Direct data:', directData ? 'Yes' : 'No');
-    
-    // Simulate report generation
-    setTimeout(() => {
+    try {
+      // Determine report type based on user input and selection
+      const reportType = reportTypes.analytics ? 'analytics' : 'quarterly';
+      
+      // Prepare the input data for the API
+      const input = {
+        reportType,
+        reportDescription: userInput,
+        selectedModel: 'gpt-4', // Default model
+        factualConfidence: true,
+        draftMode: true,
+        sourceCitations: true
+      };
+      
+      console.log('Sending API request with input:', input);
+      
+      // Call the API to generate the report
+      const response = await fetch('/api/generate-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ input }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Pass the generated report to the parent component
+      onReportGenerated(data.report);
+    } catch (error: any) {
+      console.error('Error generating report:', error);
+      // Show error in the report area
+      onReportGenerated(`# Error Generating Report\n\nThere was an error generating your report. Please try again.\n\nError details: ${error.message}`);
+    } finally {
       setIsGenerating(false);
-      // In a real app, you would handle the generated report here
-    }, 3000);
+    }
   };
   
   return (

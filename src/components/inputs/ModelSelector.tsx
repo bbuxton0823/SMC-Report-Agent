@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { DEFAULT_MODEL } from '@/lib/env';
 
 interface AIModel {
   id: string;
@@ -16,6 +17,13 @@ interface ModelSelectorProps {
 
 export default function ModelSelector({ onModelChange }: ModelSelectorProps) {
   const models: AIModel[] = [
+    {
+      id: 'gpt-4',
+      name: 'GPT-4',
+      description: 'High quality model for complex reports',
+      speedRating: 3,
+      qualityRating: 5
+    },
     {
       id: 'gpt-4-5',
       name: 'GPT-4.5',
@@ -46,7 +54,11 @@ export default function ModelSelector({ onModelChange }: ModelSelectorProps) {
     }
   ];
   
-  const [selectedModelId, setSelectedModelId] = useState(models[0].id);
+  const [selectedModelId, setSelectedModelId] = useState(() => {
+    // Use the default model from env if it's in the list, otherwise use the first model
+    const defaultModel = models.find(model => model.id === DEFAULT_MODEL);
+    return defaultModel ? defaultModel.id : models[0].id;
+  });
   
   // Notify parent component when model changes
   useEffect(() => {
